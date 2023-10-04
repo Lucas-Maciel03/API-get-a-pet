@@ -25,7 +25,7 @@ module.exports = class UserController{
         const userExists = await User.findOne({ email: email })
 
         if(userExists){
-            res.status(422).json({ message: 'O usuario ja existe, utilize outro e-mail' })
+            res.status(422).json({ message: 'O usuário já existe, utilize outro e-mail' })
             return
         }
 
@@ -35,12 +35,12 @@ module.exports = class UserController{
         }
 
         if(!password){
-            res.status(422).json({ message: 'A senha é obrigatoria!' })
+            res.status(422).json({ message: 'A senha é obrigatória!' })
             return
         }
 
         if(!confirmpassword){
-            res.status(422).json({ message: 'A confirmação de senha é obrigatoria!' })
+            res.status(422).json({ message: 'A confirmação de senha é obrigatória!' })
             return
         }
 
@@ -77,7 +77,7 @@ module.exports = class UserController{
         }
 
         if(!password){
-            res.status(422).json({ message: 'A senha é obrigatoria!' })
+            res.status(422).json({ message: 'A senha é obrigatória!' })
             return
         }
 
