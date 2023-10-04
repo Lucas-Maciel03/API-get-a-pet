@@ -10,9 +10,9 @@ app.use(express.static('public'))
 app.use(express.json())
 
 //routes
-const userRoutes = require('./src/routes/')
+const userRoutes = require('./src/routes/userRoutes')
 
 app.use('/users', userRoutes)
-app.use('/pets')
+//app.use('/pets')
 
 app.listen(3000, () => console.log('Listen in port 3000'))
