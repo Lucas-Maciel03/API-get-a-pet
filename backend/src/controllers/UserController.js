@@ -98,7 +98,7 @@ module.exports = class UserController{
         }
         
         try {
-            await createUserToken(checkUser, req, res)
+            await createUserToken(user, req, res)
         } catch (error) {
             res.status(500).json({ message: error })
         }
