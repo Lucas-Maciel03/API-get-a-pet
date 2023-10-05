@@ -2,9 +2,11 @@ const User = require('../models/User')
 
 //import modules
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 //import middlewares
 const createUserToken = require('../middlewares/create-user-token')
+const getToken = require('../middlewares/get-token')
 
 module.exports = class UserController{
 
@@ -102,5 +104,21 @@ module.exports = class UserController{
         } catch (error) {
             res.status(500).json({ message: error })
         }
+    }
+
+    static async checkUser(req, res){
+        let currentUser
+
+        if(req.headers.authorization){
+            const token = getToken(req)
+            
+            const decoded = jwt.verify(token, 'secretapenasumteste')
+
+            currentUser = await User.findById(decoded.id).select('-password')
+        } else {
+            currentUser = null
+        }    
+
+        res.status(200).json({ currentUser })
     }
 }
