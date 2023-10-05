@@ -3,6 +3,7 @@ const User = require('../models/User')
 //import modules
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const ObjectId  = require('mongoose').Types.ObjectId
 
 //import middlewares
 const createUserToken = require('../middlewares/create-user-token')
@@ -120,5 +121,23 @@ module.exports = class UserController{
         }    
 
         res.status(200).json({ currentUser })
+    }
+
+    static async getUserById(req, res){
+        const id = req.params.id
+
+        if(!ObjectId.isValid(id)){
+            res.status(422).json({ message: 'ID inválido!' })
+            return
+        }
+
+        const user = await User.findById(id).select('-password')
+
+        if(!user){
+            res.status(422).json({ message: 'Usuário não encontrado!' })
+            return
+        }
+
+        res.status(200).json({ user })
     }
 }
