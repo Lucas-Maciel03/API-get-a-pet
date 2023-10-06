@@ -8,6 +8,7 @@ const ObjectId  = require('mongoose').Types.ObjectId
 //import middlewares
 const createUserToken = require('../middlewares/create-user-token')
 const getToken = require('../middlewares/get-token')
+const getUserByToken = require('../middlewares/get-user-by-token')
 
 module.exports = class UserController{
 
@@ -139,5 +140,76 @@ module.exports = class UserController{
         }
 
         res.status(200).json({ user })
+    }
+
+    static async editUser(req, res){
+        const token = getToken(req)
+
+        const user = await getUserByToken(res, token)
+        
+        const { name, email, phone, password, confirmpassword } = req.body
+
+        if(req.file){
+            user.image = req.file.filename
+        }
+
+        if(!name){
+            res.status(422).json({ message: 'O nome é obrigatório' })
+            return
+        }else {
+            user.name = name
+        }
+
+        if(!email) {
+            res.status(422).json({ message: 'O e-mail é obrigatório!' })
+            return
+        }
+
+        const userExists = await User.findOne({ email: email })
+
+        if(email !== user.email && userExists){
+            res.status(422).json({ message: 'Utilize outro e-mail!'})
+            return
+        } else if(email !== user.email && !userExists){
+            user.email = email
+        }
+        
+        if(!phone){
+            res.status(422).json({ message: 'O número de telefone é obrigatorio!'})
+            return
+        } else {
+            user.phone = phone
+        }
+
+        if(!password){
+            res.status(422).json({ message: 'A senha é obrigatória!'})
+            return
+        }
+
+        if(!confirmpassword){
+            res.status(422).json({ message: 'A confirmação de senha é obrigatória!'})
+            return
+        }
+
+        if(password !== confirmpassword){
+            res.status(422).json({ message: 'As senhas não conferem!'})
+            return
+        } else if(password === confirmpassword && password !== null){
+            const salt = await bcrypt.genSalt(12)
+            const hashPassword = await bcrypt.hash(password, salt)
+            user.password = hashPassword
+        }
+
+        try {
+            await User.findOneAndUpdate(
+                { _id: user._id }, //id do usuario que ser atualizado
+                { $set: user }, //qual dado sera atualizado
+                { new: true }
+            )
+
+            res.status(200).json({ message: 'Usuário atualizado com sucesso!' })
+        } catch (error) {
+            res.status(500).json({ message: error })
+        }
     }
 }
