@@ -143,11 +143,24 @@ module.exports = class UserController{
     }
 
     static async editUser(req, res){
+        const id = req.params.id
+
         const token = getToken(req)
 
         const user = await getUserByToken(res, token)
         
         const { name, email, phone, password, confirmpassword } = req.body
+
+        //validations
+        if(!ObjectId.isValid(id)){
+            res.status(422).json({ message: 'ID Inválido!' })
+            return
+        }
+        
+        if(id !== user._id.toString()){
+            res.status(422).json({ message: 'Acesso negado!' })
+            return
+        }
 
         if(req.file){
             user.image = req.file.filename
