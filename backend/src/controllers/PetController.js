@@ -77,4 +77,20 @@ module.exports = class PetController{
         
         res.status(200).json({ pets })
     }
+
+    static async getAllUserPets(req, res){
+        //get user
+        const token = getToken(req)
+        const user = await getUserByToken(res, token)
+        
+        //get all user pets
+        let pets = await Pet.find({ 'user._id': user._id }).sort('-createdAt')
+        
+        if(pets.length === 0){
+            res.status(404).json({ message: 'Você não tem nenhum pet cadastrado!' })
+            return
+        }
+
+        res.status(200).json({ pets })
+    }
 }

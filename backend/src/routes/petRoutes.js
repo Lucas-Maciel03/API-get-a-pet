@@ -15,5 +15,6 @@ router.post(
     PetController.create
 )
 router.get('/', PetController.getPet)
+router.get('/userpets', verifyToken, PetController.getAllUserPets)
 
 module.exports = router
