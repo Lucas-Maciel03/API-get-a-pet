@@ -101,10 +101,30 @@ module.exports = class PetController{
         const pets = await Pet.find({ 'adopter._id': user._id }).sort('-createdAt')
 
         if(pets.length === 0){
-            res.status(422).json({ message: 'Você não adotou nenhum pet!' })
+            res.status(404).json({ message: 'Você não adotou nenhum pet!' })
             return
         }
 
         res.status(200).json({ pets })
+    }
+
+    static async getPetById(req, res){
+        const id = req.params.id   
+
+        //check if id is valid
+        if(!ObjectId.isValid(id)){
+            res.status(422).json({ message: 'ID inválido'})
+            return
+        }
+
+        //get pet by id
+        const pet = await Pet.findById(id)
+
+        if(!pet){
+            res.status(404).json({ message: 'Pet não encontrado!'})
+            return
+        }
+
+        res.status(200).json({ pet })
     }
 }
