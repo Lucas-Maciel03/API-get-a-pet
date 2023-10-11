@@ -234,6 +234,5 @@ module.exports = class PetController{
         } catch (error) {
             res.status(500).json({ message: error })
         }
-        
     }
 }
