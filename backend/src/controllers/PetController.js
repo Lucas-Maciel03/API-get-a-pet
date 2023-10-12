@@ -48,6 +48,7 @@ module.exports = class PetController{
             age: age,
             weight: weight,
             color: color,
+            available: available,
             images: [],
             user:{
                 name: user.name,
