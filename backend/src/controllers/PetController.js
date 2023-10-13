@@ -302,29 +302,24 @@ module.exports = class PetController{
             return
         }
 
+        //check if pet has already been adopted
+        if(pet.available === false){
+            res.status(422).json({ message: 'Esse pet já foi Adotado!' })
+            return
+        }
+
         //check if user registered the pet
         const token = getToken(req)
         const user = await getUserByToken(res, token)
         
-        if(pet.user._id.equals(user._id)){
-            res.status(422).json({ message: 'Você não pode adotar seu próprio pet!' })
+        if(pet.user._id.toString() !== user._id.toString()){
+            res.status(401).json({ message: 'Você não tem permissão para realizar essa ação!' })
             return
         }
 
         //check if user has already schedule the visit
-        if(pet.adopter){
-            if(pet.adopter._id.toString() !== user._id.toString()){
-                res.status(422).json({ message: 'Você não pode adotar esse pet, pois não agendou visita a ele!' })
-                return
-            }
-        } else{
+        if(!pet.adopter){
             res.status(422).json({ message: 'Esse pet não pode ser adotado, pois não tem nenhum adotante agendado!' })
-            return
-        }
-                
-        //check if pet has already been adopted
-        if(pet.available === false){
-            res.status(422).json({ message: 'Esse pet já foi Adotado!' })
             return
         }
 
